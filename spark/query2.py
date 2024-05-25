@@ -29,13 +29,13 @@ top_10_failures = sorted_failures.limit(10)
 top_10_failures.show(truncate=False)
 
 # Scrittura dei top 10 modelli su Redis
-top_10_failures_data = top_10_failures.collect()
-for idx, row in enumerate(top_10_failures_data):
-    model = row["model"]
-    count = row["count"]
-    redis_key = f"top_10_failures:{idx+1}"
-    redis_value = f"model:{model},count:{count}"
-    redis_client.set(redis_key, redis_value)
+# top_10_failures_data = top_10_failures.collect()
+# for idx, row in enumerate(top_10_failures_data):
+#     model = row["model"]
+#     count = row["count"]
+#     redis_key = f"top_10_failures:{idx+1}"
+#     redis_value = f"model:{model},count:{count}"
+#     redis_client.set(redis_key, redis_value)
 
 # Raggruppamento per vault e conteggio dei guasti
 vault_failures = failures.groupBy(col("vault_id").getField("member0").alias("vault_id")).count()
@@ -45,6 +45,20 @@ sorted_vault_failures = vault_failures.orderBy(desc("count"))
 
 # Selezione dei primi 10 vault con più guasti
 top_10_vault_failures = sorted_vault_failures.limit(10)
+
+# Scrittura dei top 10 vault su Redis
+top_10_vault_failures_data = top_10_vault_failures.collect()
+data_to_redis = []
+for row in top_10_vault_failures_data:
+    data_to_redis.append({
+        "vault_id": row["vault_id"],
+        "count": row["count"]
+    })
+
+for item in data_to_redis:
+    key = f"{item['vault_id']}"
+    value = item["count"]
+    redis_client.hset("query2a", key, value)
 
 # Visualizzazione dei risultati
 top_10_vault_failures.show(truncate=False)
