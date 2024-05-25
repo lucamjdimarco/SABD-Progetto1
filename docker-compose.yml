@@ -1,0 +1,136 @@
+version: '3.8'
+
+services:
+  nifi:
+    image: apache/nifi:latest
+    container_name: nifi
+    ports:
+      - "8080:8080"
+    volumes:
+      #- ./nifi/data:/opt/nifi/nifi-current/data
+      - ./raw_data_medium-utv_sorted.csv:/opt/nifi/nifi-current/raw_data_medium-utv_sorted.csv
+      - ./core-site.xml:/opt/nifi/nifi-current/conf/core-site.xml
+      - ./hdfs-site.xml:/opt/nifi/nifi-current/conf/hdfs-site.xml
+    environment:
+      - NIFI_WEB_HTTP_PORT=8080
+    networks:
+      - hadoop-net
+    
+  namenode:
+    image: apache/hadoop:3
+    hostname: namenode
+    #command: ["hdfs", "namenode"]
+    #command: ["/bin/bash", "-c", "/opt/hadoop-bootstrap.sh"]
+    command: >
+      /bin/bash -c "
+        hdfs namenode &
+        while ! nc -z localhost 9870; do   
+          sleep 1 
+        done 
+        hdfs dfs -mkdir -p /nifi &&
+        hdfs dfs -chown -R nifi:hadoop /nifi &&
+        hdfs dfs -chmod -R 755 /nifi &&
+        hdfs dfs -mkdir -p /stats &&
+        hdfs dfs -chown -R nifi:hadoop /stats &&
+        hdfs dfs -chmod -R 755 /stats &&
+        tail -f /dev/null
+      "
+    #oppure 770 ma più restrittivo
+    ports:
+      - 9870:9870
+    env_file:
+      - ./config
+    environment:
+        ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name"
+    networks:
+      - hadoop-net
+
+  datanode:
+    image: apache/hadoop:3
+    command: ["hdfs", "datanode"]
+    env_file:
+      - ./config   
+    networks:
+      - hadoop-net
+   
+
+  resourcemanager:
+    image: apache/hadoop:3
+    hostname: resourcemanager
+    command: ["yarn", "resourcemanager"]
+    ports:
+        - 8088:8088
+    env_file:
+      - ./config
+    volumes:
+      - ./test.sh:/opt/test.sh
+    networks:
+      - hadoop-net
+
+
+  nodemanager:
+    image: apache/hadoop:3
+    command: ["yarn", "nodemanager"]
+    env_file:
+      - ./config
+    networks:
+      - hadoop-net
+    
+  spark-master:
+    #image: apache/spark:latest
+    image: lucamjdimarco/sabd
+    container_name: spark-master
+    hostname: spark-master
+    environment:
+      - SPARK_MODE=master
+      - SPARK_MASTER_PORT=7077
+      - SPARK_MASTER_WEBUI_PORT=8081
+    ports:
+      - "8081:8081"
+      - "7077:7077"
+    networks:
+      - hadoop-net
+    command: >
+      /bin/bash -c "
+        /opt/spark/sbin/start-master.sh &&
+        tail -f /dev/null
+      "
+    volumes:
+      - ./core-site.xml:/opt/spark/conf/core-site.xml
+      - ./hdfs-site.xml:/opt/spark/conf/hdfs-site.xml
+
+  spark-worker:
+    #image: apache/spark:latest
+    image: lucamjdimarco/sabd
+    container_name: spark-worker
+    hostname: spark-worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_PORT=8082
+    ports:
+      - "8082:8082"
+    networks:
+      - hadoop-net
+    command: >
+      /bin/bash -c "
+        /opt/spark/sbin/start-worker.sh spark://spark-master:7077 &&
+        tail -f /dev/null
+      "
+    volumes:
+      - ./core-site.xml:/opt/spark/conf/core-site.xml
+      - ./hdfs-site.xml:/opt/spark/conf/hdfs-site.xml
+  
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - hadoop-net
+  
+networks:
+  hadoop-net:
+    driver: bridge
