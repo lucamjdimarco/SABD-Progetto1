@@ -8,7 +8,7 @@ services:
       - "8080:8080"
     volumes:
       #- ./nifi/data:/opt/nifi/nifi-current/data
-      - ./raw_data_medium-utv_sorted.csv:/opt/nifi/nifi-current/raw_data_medium-utv_sorted.csv
+      - /home/lucadm/Scrivania/SABD/NiFi-Docker/raw_data_medium-utv_sorted.csv:/opt/nifi/nifi-current/raw_data_medium-utv_sorted.csv
       - ./core-site.xml:/opt/nifi/nifi-current/conf/core-site.xml
       - ./hdfs-site.xml:/opt/nifi/nifi-current/conf/hdfs-site.xml
     environment:
