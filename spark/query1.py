@@ -13,9 +13,9 @@ spark = SparkSession.builder \
 
 start_time = time.time()
 
-csv = spark.read.parquet("hdfs://namenode:8020/nifi/raw_data_medium-utv_sorted.csv") 
+csv = spark.read.parquet("hdfs://namenode:8020/nifi/filter1/raw_data_medium-utv_sorted.csv") 
 
-csv.printSchema()
+# csv.printSchema()
 
 
 #grouped = csv.groupBy("date","vault_id","failure").count() 
@@ -39,8 +39,9 @@ filteredPlus = filtered.filter(col("count").isin([2,3,4]))
 filtered_data = filteredPlus.collect()
 data_to_redis = []
 for row in filtered_data:
+    date = row["date"].split("T")[0]
     data_to_redis.append({
-        "date": row["date"],
+        "date": date,
         "vault_id": row["vault_id"],
         "failure": row["failure"],
         "count": row["count"]
@@ -55,7 +56,7 @@ for row in filtered_data:
 for item in data_to_redis:
     key = f"{item['date']}_{item['vault_id']}_{item['failure']}"
     value = item["count"]
-    redis_client.hset("bar_chart_data", key, value)
+    redis_client.hset("query1", key, value)
 
 
 

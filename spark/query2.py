@@ -11,7 +11,7 @@ spark = SparkSession.builder \
 
 start_time = time.time()
 
-df = spark.read.parquet("hdfs://namenode:8020/nifi/raw_data_medium-utv_sorted.csv")
+df = spark.read.parquet("hdfs://namenode:8020/nifi/filter1/raw_data_medium-utv_sorted.csv")
 
 # Filtro per fallimenti (failure == 1)
 failures = df.filter(col("failure").getField("member0") == 1)

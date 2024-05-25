@@ -25,7 +25,7 @@ spark = SparkSession.builder \
 start_time = time.time()
 
 # Leggi i dati
-df = spark.read.parquet("hdfs://namenode:8020/nifi/raw_data_medium-utv_sorted.csv")
+df = spark.read.parquet("hdfs://namenode:8020/nifi/filter2/raw_data_medium-utv_sorted.csv")
 
 # Determina la data di rilevamento più recente per ciascun disco rigido
 latest_detection_date = df.groupBy("serial_number") \
