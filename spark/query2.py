@@ -29,6 +29,20 @@ top_10_failures = sorted_failures.limit(10)
 top_10_failures.show(truncate=False)
 
 # Scrittura dei top 10 modelli su Redis
+top_10_vault_failures_data = top_10_failures.collect()
+data_to_redis = []
+for row in top_10_vault_failures_data:
+    data_to_redis.append({
+        "model": row["model"],
+        "count": row["count"]
+    })
+
+for item in data_to_redis:
+    key = f"{item['model']}"
+    value = item["count"]
+    redis_client.hset("query2a", key, value)
+
+# Scrittura dei top 10 modelli su Redis
 # top_10_failures_data = top_10_failures.collect()
 # for idx, row in enumerate(top_10_failures_data):
 #     model = row["model"]
@@ -46,19 +60,19 @@ sorted_vault_failures = vault_failures.orderBy(desc("count"))
 # Selezione dei primi 10 vault con più guasti
 top_10_vault_failures = sorted_vault_failures.limit(10)
 
-# Scrittura dei top 10 vault su Redis
-top_10_vault_failures_data = top_10_vault_failures.collect()
-data_to_redis = []
-for row in top_10_vault_failures_data:
-    data_to_redis.append({
-        "vault_id": row["vault_id"],
-        "count": row["count"]
-    })
+# # Scrittura dei top 10 vault su Redis
+# top_10_vault_failures_data = top_10_vault_failures.collect()
+# data_to_redis = []
+# for row in top_10_vault_failures_data:
+#     data_to_redis.append({
+#         "vault_id": row["vault_id"],
+#         "count": row["count"]
+#     })
 
-for item in data_to_redis:
-    key = f"{item['vault_id']}"
-    value = item["count"]
-    redis_client.hset("query2a", key, value)
+# for item in data_to_redis:
+#     key = f"{item['vault_id']}"
+#     value = item["count"]
+#     redis_client.hset("query2a", key, value)
 
 # Visualizzazione dei risultati
 top_10_vault_failures.show(truncate=False)
@@ -74,14 +88,42 @@ result = top_10_vault_failures.join(vaults_with_models, "vault_id").orderBy(desc
 result.show(truncate=False)
 
 # Scrittura dei risultati su Redis
-result_data = result.collect()
-for row in result_data:
+# query2b = result.collect()
+# data_to_redis = []
+# for row in query2b:
+#     data_to_redis.append({
+#         "vault_id": row["vault_id"],
+#         "models": row["models"],
+#         "count": row["count"]
+#     })
+
+# for item in data_to_redis:
+#     key = f"{item['vault_id']}"
+#     value = item["count"]
+#     redis_client.hset("query2a", key, value)
+
+# Itera su ciascuna riga del DataFrame result e scrivi i dati in Redis
+for row in result.collect():
     vault_id = row["vault_id"]
-    models = ",".join(row["models"])
     count = row["count"]
-    redis_key = f"vault_{vault_id}"
-    redis_value = f"count:{count},models:{models}"
-    redis_client.set(redis_key, redis_value)
+    models = row["models"]
+    
+    # Componi la chiave Redis utilizzando vault_id e models
+    redis_key = f"{vault_id}_{'_'.join(models)}"
+    
+    # Scrivi i dati in Redis
+    redis_client.hset("query2b",redis_key, count)
+
+
+
+# result_data = result.collect()
+# for row in result_data:
+#     vault_id = row["vault_id"]
+#     models = ",".join(row["models"])
+#     count = row["count"]
+#     redis_key = f"vault_{vault_id}, models:{models}"
+#     redis_value = f"count:{count}"
+#     redis_client.set(redis_key, redis_value)
 
 print("--- %s seconds ---" % (time.time() - start_time))
 
