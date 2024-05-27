@@ -36,7 +36,13 @@ latest_detection_date = df.groupBy("serial_number") \
 
 
 # Unisci la data di rilevamento più recente con i dati originali
-df_with_latest_date = df.join(latest_detection_date, "serial_number")
+#df_with_latest_date = df.join(latest_detection_date, "serial_number")
+df_with_latest_date = df.join(
+    latest_detection_date, 
+    (df["serial_number"] == latest_detection_date["serial_number"]) &
+    (df["date"] == latest_detection_date["latest_detection_date"]),
+    how="inner"
+)
 
 df_with_latest_date.show(100)
 # num_tuples = df_with_latest_date.count()
