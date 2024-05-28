@@ -135,6 +135,7 @@ services:
       - SPARK_WORKER_PORT=8082
     ports:
       - "8082:8082"
+      - "4041:4040"
     networks:
       - hadoop-net
     command: >
@@ -158,6 +159,7 @@ services:
       - SPARK_WORKER_PORT=8083
     ports:
       - "8083:8083"
+      - "4042:4040"
     networks:
       - hadoop-net
     command: >
