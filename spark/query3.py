@@ -87,6 +87,9 @@ failed_stats.show()
 print("Non-failed Disks Statistics:")
 non_failed_stats.show()
 
+failed_stats.write.csv("file:///opt/spark/work-dir/query3_1")
+non_failed_stats.write.csv("file:///opt/spark/work-dir/query3_2")
+
 # Scrittura delle statistiche su Redis
 failed_stats_data = failed_stats.collect()[0].asDict()
 non_failed_stats_data = non_failed_stats.collect()[0].asDict()

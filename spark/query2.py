@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, desc, collect_set
+from pyspark.sql.functions import col, desc, collect_set, concat_ws
 import time
 import redis
 
@@ -24,6 +24,8 @@ sorted_failures = model_failures.orderBy(desc("count"))
 
 # Selezione dei primi 10 modelli con più guasti
 top_10_failures = sorted_failures.limit(10)
+
+top_10_failures.write.mode("overwrite").csv("file:///opt/spark/work-dir/query2_1")
 
 # Visualizzazione dei risultati
 top_10_failures.show(truncate=False)
@@ -77,6 +79,9 @@ top_10_vault_failures = sorted_vault_failures.limit(10)
 # Visualizzazione dei risultati
 top_10_vault_failures.show(truncate=False)
 
+df_csv = failures.groupBy(col("vault_id").getField("member0").alias("vault_id")) \
+    .agg(concat_ws(",", collect_set("model")).alias("models"))
+
 # Ottenere la lista dei modelli di hard disk per ciascun vault
 vaults_with_models = failures.groupBy(col("vault_id").getField("member0").alias("vault_id")) \
     .agg(collect_set("model").alias("models"))
@@ -84,8 +89,12 @@ vaults_with_models = failures.groupBy(col("vault_id").getField("member0").alias(
 # Unione con il conteggio dei guasti per ottenere il numero di guasti per ciascun vault
 result = top_10_vault_failures.join(vaults_with_models, "vault_id").orderBy(desc("count"))
 
+result_csv = top_10_vault_failures.join(df_csv, "vault_id").orderBy(desc("count"))
+
 # Visualizzazione del risultato finale
 result.show(truncate=False)
+
+result_csv.write.mode("overwrite").csv("file:///opt/spark/work-dir/query2_2")
 
 # Scrittura dei risultati su Redis
 # query2b = result.collect()

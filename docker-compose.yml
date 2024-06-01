@@ -23,6 +23,20 @@ services:
     #command: ["/bin/bash", "-c", "/opt/hadoop-bootstrap.sh"]
     command: >
       /bin/bash -c "
+        echo '<configuration>
+                <property>
+                  <name>dfs.namenode.rpc-address</name>
+                  <value>namenode:8020</value>
+                </property>
+                <property>
+                  <name>dfs.replication</name>
+                  <value>2</value>
+                </property>
+                <property>
+                  <name>ipc.maximum.data.length</name>
+                  <value>262144000</value>
+                </property>
+              </configuration>' > /etc/hadoop/hdfs-site.xml &&
         hdfs namenode &
         while ! nc -z localhost 9870; do   
           sleep 1 
@@ -44,14 +58,68 @@ services:
         ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name"
     networks:
       - hadoop-net
+    # volumes:
+    #   - ./hdfs-site.xml:/opt/hadoop/etc/hadoop/hdfs-site.xml
 
-  datanode:
+  datanode1:
     image: apache/hadoop:3
-    command: ["hdfs", "datanode"]
+    container_name: datanode1
+    hostname: datanode1
+    #command: ["hdfs", "datanode"]
+    command: >
+      /bin/bash -c "
+        echo '<configuration>
+                <property>
+                  <name>dfs.namenode.rpc-address</name>
+                  <value>namenode:8020</value>
+                </property>
+                <property>
+                  <name>dfs.replication</name>
+                  <value>2</value>
+                </property>
+                <property>
+                  <name>ipc.maximum.data.length</name>
+                  <value>262144000</value>
+                </property>
+              </configuration>' > /etc/hadoop/hdfs-site.xml &&
+        hdfs datanode
+      "
     env_file:
       - ./config   
     networks:
       - hadoop-net
+    # volumes:
+    #   - ./hdfs-site.xml:/opt/hadoop/etc/hadoop/hdfs-site.xml
+
+  datanode2:
+    image: apache/hadoop:3
+    container_name: datanode2
+    hostname: datanode2
+    #command: ["hdfs", "datanode"]
+    command: >
+      /bin/bash -c "
+        echo '<configuration>
+                <property>
+                  <name>dfs.namenode.rpc-address</name>
+                  <value>namenode:8020</value>
+                </property>
+                <property>
+                  <name>dfs.replication</name>
+                  <value>2</value>
+                </property>
+                <property>
+                  <name>ipc.maximum.data.length</name>
+                  <value>262144000</value>
+                </property>
+              </configuration>' > /etc/hadoop/hdfs-site.xml &&
+        hdfs datanode
+      "
+    env_file:
+      - ./config   
+    networks:
+      - hadoop-net
+    # volumes:
+    #   - ./hdfs-site.xml:/opt/hadoop/etc/hadoop/hdfs-site.xml
    
 
   resourcemanager:
@@ -96,9 +164,9 @@ services:
         /opt/spark/sbin/start-master.sh &&
         tail -f /dev/null
       "
-    volumes:
-      - ./core-site.xml:/opt/spark/conf/core-site.xml
-      - ./hdfs-site.xml:/opt/spark/conf/hdfs-site.xml
+    # volumes:
+    #   - ./core-site.xml:/opt/spark/conf/core-site.xml
+    #   - ./hdfs-site.xml:/opt/spark/conf/hdfs-site.xml
 
   # spark-worker:
   #   #image: apache/spark:latest
