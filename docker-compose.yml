@@ -102,16 +102,18 @@ services:
     environment:
       - SPARK_MODE=master
       - SPARK_MASTER_PORT=7077
-      - SPARK_MASTER_WEBUI_PORT=8081
+      #- SPARK_MASTER_WEBUI_PORT=8080
+      - SPARK_UI_PORT=4040
     ports:
-      - "8081:8081"
+      #- "8080:8080"
       - "7077:7077"
       - "4040:4040"
+      - "4041:4041"
     networks:
       - hadoop-net
     command: >
       /bin/bash -c "
-        /opt/spark/sbin/start-master.sh &&
+        /opt/spark/sbin/start-master.sh --webui-port 4040 &&
         tail -f /dev/null
       "
     volumes:
@@ -151,10 +153,10 @@ services:
       - SPARK_MASTER_URL=spark://spark-master:7077
       - SPARK_WORKER_MEMORY=1G
       - SPARK_WORKER_CORES=1
-      - SPARK_WORKER_PORT=8082
+      #- SPARK_WORKER_PORT=8082
     ports:
       - "8082:8082"
-      - "4041:4040"
+      - "4042:4040"
     networks:
       - hadoop-net
     command: >
@@ -175,10 +177,10 @@ services:
       - SPARK_MASTER_URL=spark://spark-master:7077
       - SPARK_WORKER_MEMORY=1G
       - SPARK_WORKER_CORES=1
-      - SPARK_WORKER_PORT=8083
+      #- SPARK_WORKER_PORT=8083
     ports:
       - "8083:8083"
-      - "4042:4040"
+      - "4043:4040"
     networks:
       - hadoop-net
     command: >

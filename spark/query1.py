@@ -61,11 +61,15 @@ for item in data_to_redis:
     value = item["count"]
     redis_client.hset("query1", key, value)
 
-filteredPlus.write.csv("file:///opt/spark/work-dir/query1")
+filteredPlus.write.mode("overwrite").csv("file:///opt/spark/work-dir/query1")
 
 filteredPlus.orderBy(col("date")).show(filteredPlus.count(), truncate=False) 
 
 
 print("--- %s seconds ---" % (time.time() - start_time))
+
+print("Job completed. Keeping Spark session open for monitoring.")
+while True:
+    time.sleep(60)
 
 spark.stop()
