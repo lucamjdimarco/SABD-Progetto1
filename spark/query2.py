@@ -1,3 +1,5 @@
+#/opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --num-executors 2 --executor-cores 1 --executor-memory 1G query2.py
+
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, desc, collect_set, concat_ws
 import time
@@ -135,5 +137,9 @@ for row in result.collect():
 #     redis_client.set(redis_key, redis_value)
 
 print("--- %s seconds ---" % (time.time() - start_time))
+
+print("Job completed. Keeping Spark session open for monitoring.")
+while True:
+    time.sleep(60)
 
 spark.stop()

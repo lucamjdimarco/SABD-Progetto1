@@ -1,3 +1,5 @@
+#/opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --num-executors 2 --executor-cores 1 --executor-memory 1G query3.py
+
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, expr, percent_rank
 from pyspark.sql.window import Window
@@ -98,6 +100,10 @@ redis_client.hmset("failed_stats", failed_stats_data)
 redis_client.hmset("non_failed_stats", non_failed_stats_data)
 
 print("--- %s seconds ---" % (time.time() - start_time))
+
+print("Job completed. Keeping Spark session open for monitoring.")
+while True:
+    time.sleep(60)
 
 # Chiudi la sessione Spark
 spark.stop()
