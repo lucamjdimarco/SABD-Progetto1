@@ -47,6 +47,10 @@ LIMIT 10
 """
 top_10_failures = spark.sql(model_failures_query)
 
+top_10_failures.write.mode("overwrite").csv("file:///opt/spark/work-dir/query2_1SQL")
+print("---First part: %s seconds ---" % (time.time() - start_time))
+first_part_time = time.time() - start_time
+
 # Visualizzazione dei risultati
 top_10_failures.show(truncate=False)
 
@@ -63,6 +67,8 @@ for item in data_to_redis:
     key = f"{item['model']}"
     value = item["count"]
     redis_client.hset("query2a", key, value)
+
+end_first_part_time = time.time() - start_time
 
 # Query per raggruppamento per vault e conteggio dei guasti
 vault_failures_query = """
@@ -121,6 +127,11 @@ ORDER BY
 """
 result = spark.sql(result_query)
 
+# result.write.mode("overwrite").csv("file:///opt/spark/work-dir/query2_2SQL")
+print("---Second part: %s seconds ---" % (time.time() - start_time))
+
+second_part_time = time.time() - start_time
+
 # Visualizzazione del risultato finale
 result.show(truncate=False)
 
@@ -136,6 +147,9 @@ for row in result.collect():
     # Scrivi i dati in Redis
     redis_client.hset("query2b", redis_key, count)
 
+print("First part time: ", first_part_time)
+print("End first part time: ", end_first_part_time)
+print("Second part time: ", second_part_time)
 print("--- %s seconds ---" % (time.time() - start_time))
 
 # Chiudere la sessione Spark

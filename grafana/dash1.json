@@ -24,7 +24,7 @@
     {
       "datasource": {
         "type": "redis-datasource",
-        "uid": "fdmr5rfcyca2od"
+        "uid": "cdnrzdvr5w4jkb"
       },
       "fieldConfig": {
         "defaults": {
@@ -82,7 +82,7 @@
           "command": "hgetall",
           "datasource": {
             "type": "redis-datasource",
-            "uid": "fdmr5rfcyca2od"
+            "uid": "cdnrzdvr5w4jkb"
           },
           "keyName": "query1",
           "query": "",
@@ -96,7 +96,7 @@
     {
       "datasource": {
         "type": "redis-datasource",
-        "uid": "fdmr5rfcyca2od"
+        "uid": "cdnrzdvr5w4jkb"
       },
       "fieldConfig": {
         "defaults": {
@@ -151,7 +151,7 @@
           "command": "hgetall",
           "datasource": {
             "type": "redis-datasource",
-            "uid": "fdmr5rfcyca2od"
+            "uid": "cdnrzdvr5w4jkb"
           },
           "hide": false,
           "keyName": "query2a",
@@ -166,7 +166,7 @@
     {
       "datasource": {
         "type": "redis-datasource",
-        "uid": "fdmr5rfcyca2od"
+        "uid": "cdnrzdvr5w4jkb"
       },
       "fieldConfig": {
         "defaults": {
@@ -221,7 +221,7 @@
           "command": "hgetall",
           "datasource": {
             "type": "redis-datasource",
-            "uid": "fdmr5rfcyca2od"
+            "uid": "cdnrzdvr5w4jkb"
           },
           "keyName": "query2b",
           "query": "",
@@ -235,7 +235,7 @@
     {
       "datasource": {
         "type": "redis-datasource",
-        "uid": "fdmr5rfcyca2od"
+        "uid": "cdnrzdvr5w4jkb"
       },
       "fieldConfig": {
         "defaults": {
@@ -290,7 +290,7 @@
           "command": "hgetall",
           "datasource": {
             "type": "redis-datasource",
-            "uid": "fdmr5rfcyca2od"
+            "uid": "cdnrzdvr5w4jkb"
           },
           "keyName": "failed_stats",
           "query": "",
@@ -304,7 +304,7 @@
     {
       "datasource": {
         "type": "redis-datasource",
-        "uid": "fdmr5rfcyca2od"
+        "uid": "cdnrzdvr5w4jkb"
       },
       "fieldConfig": {
         "defaults": {
@@ -358,7 +358,7 @@
           "command": "hgetall",
           "datasource": {
             "type": "redis-datasource",
-            "uid": "fdmr5rfcyca2od"
+            "uid": "cdnrzdvr5w4jkb"
           },
           "keyName": "non_failed_stats",
           "query": "",

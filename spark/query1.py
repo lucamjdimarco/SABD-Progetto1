@@ -39,6 +39,9 @@ filteredPlus = filtered.filter(col("count").isin([2,3,4]))
 #     value = row["count"]
 #     redis_client.set(key, value)
 # Converti il DataFrame in una lista di dizionari JSON
+filteredPlus.write.mode("overwrite").csv("file:///opt/spark/work-dir/query1")
+print("--- %s seconds ---" % (time.time() - start_time))
+print("\n\n\n")
 filtered_data = filteredPlus.collect()
 data_to_redis = []
 for row in filtered_data:
@@ -61,7 +64,7 @@ for item in data_to_redis:
     value = item["count"]
     redis_client.hset("query1", key, value)
 
-filteredPlus.write.mode("overwrite").csv("file:///opt/spark/work-dir/query1")
+
 
 filteredPlus.orderBy(col("date")).show(filteredPlus.count(), truncate=False) 
 

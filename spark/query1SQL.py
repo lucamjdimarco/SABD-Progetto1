@@ -50,6 +50,10 @@ HAVING
 
 filteredPlus = spark.sql(sql_query)
 
+filteredPlus.write.mode("overwrite").csv("file:///opt/spark/work-dir/query1SQL")
+print("--- %s seconds ---" % (time.time() - start_time))
+print("\n\n\n")
+
 # Convertire il DataFrame risultante in una lista di dizionari JSON
 filtered_data = filteredPlus.collect()
 data_to_redis = []

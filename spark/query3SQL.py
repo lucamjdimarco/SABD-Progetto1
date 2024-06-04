@@ -116,6 +116,11 @@ failed_stats.show()
 print("Non-failed Disks Statistics:")
 non_failed_stats.show()
 
+failed_stats.write.mode("overwrite").csv("file:///opt/spark/work-dir/query3_1SQL")
+non_failed_stats.write.mode("overwrite").csv("file:///opt/spark/work-dir/query3_2SQL")
+
+Without_write_time = time.time() - start_time
+
 # Scrittura delle statistiche su Redis
 failed_stats_data = failed_stats.collect()[0].asDict()
 non_failed_stats_data = non_failed_stats.collect()[0].asDict()
@@ -123,6 +128,7 @@ non_failed_stats_data = non_failed_stats.collect()[0].asDict()
 redis_client.hmset("failed_stats", failed_stats_data)
 redis_client.hmset("non_failed_stats", non_failed_stats_data)
 
+print("without write time: ", Without_write_time)
 print("--- %s seconds ---" % (time.time() - start_time))
 
 # Chiudi la sessione Spark

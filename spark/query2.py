@@ -29,6 +29,8 @@ top_10_failures = sorted_failures.limit(10)
 
 top_10_failures.write.mode("overwrite").csv("file:///opt/spark/work-dir/query2_1")
 
+print("---First part: %s seconds ---\n\n\n" % (time.time() - start_time))
+first_part_time = time.time() - start_time
 # Visualizzazione dei risultati
 top_10_failures.show(truncate=False)
 
@@ -54,6 +56,10 @@ for item in data_to_redis:
 #     redis_key = f"top_10_failures:{idx+1}"
 #     redis_value = f"model:{model},count:{count}"
 #     redis_client.set(redis_key, redis_value)
+
+print("---End first part: %s seconds ---\n\n\n" % (time.time() - start_time))
+end_first_part_time = time.time() - start_time
+
 
 # Raggruppamento per vault e conteggio dei guasti
 vault_failures = failures.groupBy(col("vault_id").getField("member0").alias("vault_id")).count()
@@ -93,8 +99,7 @@ result = top_10_vault_failures.join(vaults_with_models, "vault_id").orderBy(desc
 
 result_csv = top_10_vault_failures.join(df_csv, "vault_id").orderBy(desc("count"))
 
-# Visualizzazione del risultato finale
-result.show(truncate=False)
+
 
 result_csv.write.mode("overwrite").csv("file:///opt/spark/work-dir/query2_2")
 
@@ -112,6 +117,12 @@ result_csv.write.mode("overwrite").csv("file:///opt/spark/work-dir/query2_2")
 #     key = f"{item['vault_id']}"
 #     value = item["count"]
 #     redis_client.hset("query2a", key, value)
+
+print("---Second part: %s seconds ---" % (time.time() - start_time))
+second_part_time = time.time() - start_time
+
+# Visualizzazione del risultato finale
+result.show(truncate=False)
 
 # Itera su ciascuna riga del DataFrame result e scrivi i dati in Redis
 for row in result.collect():
@@ -137,6 +148,9 @@ for row in result.collect():
 #     redis_client.set(redis_key, redis_value)
 
 print("--- %s seconds ---" % (time.time() - start_time))
+print("First part time: %s" % first_part_time)  
+print("End first part time: %s" % end_first_part_time)
+print("Second part time: %s" % second_part_time)
 
 print("Job completed. Keeping Spark session open for monitoring.")
 while True:

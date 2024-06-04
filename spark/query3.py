@@ -46,7 +46,7 @@ df_with_latest_date = df.join(
     how="inner"
 )
 
-df_with_latest_date.show(100)
+# df_with_latest_date.show(100)
 # num_tuples = df_with_latest_date.count()
 # print("#####################################################")
 # print(f"Number of tuples: {num_tuples}")
@@ -92,13 +92,16 @@ non_failed_stats.show()
 failed_stats.write.mode("overwrite").csv("file:///opt/spark/work-dir/query3_1")
 non_failed_stats.write.mode("overwrite").csv("file:///opt/spark/work-dir/query3_2")
 
+print("--- Without write: %s seconds ---" % (time.time() - start_time))
+Without_write_time = time.time() - start_time
+
 # Scrittura delle statistiche su Redis
 failed_stats_data = failed_stats.collect()[0].asDict()
 non_failed_stats_data = non_failed_stats.collect()[0].asDict()
 
 redis_client.hmset("failed_stats", failed_stats_data)
 redis_client.hmset("non_failed_stats", non_failed_stats_data)
-
+print("without write time: ", Without_write_time)
 print("--- %s seconds ---" % (time.time() - start_time))
 
 print("Job completed. Keeping Spark session open for monitoring.")
