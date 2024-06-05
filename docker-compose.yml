@@ -152,7 +152,7 @@ services:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark-master:7077
       - SPARK_WORKER_MEMORY=1G
-      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_CORES=2
       #- SPARK_WORKER_PORT=8082
     ports:
       - "8082:8082"
@@ -176,11 +176,35 @@ services:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark-master:7077
       - SPARK_WORKER_MEMORY=1G
-      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_CORES=2
       #- SPARK_WORKER_PORT=8083
     ports:
       - "8083:8083"
       - "4043:4040"
+    networks:
+      - hadoop-net
+    command: >
+      /bin/bash -c "
+        /opt/spark/sbin/start-worker.sh spark://spark-master:7077 &&
+        tail -f /dev/null
+      "
+    volumes:
+      - ./core-site.xml:/opt/spark/conf/core-site.xml
+      - ./hdfs-site.xml:/opt/spark/conf/hdfs-site.xml
+
+  spark-worker-3:
+    image: lucamjdimarco/sabd
+    container_name: spark-worker-3
+    hostname: spark-worker-3
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=2
+      #- SPARK_WORKER_PORT=8083
+    ports:
+      - "8084:8084"
+      - "4044:4040"
     networks:
       - hadoop-net
     command: >
