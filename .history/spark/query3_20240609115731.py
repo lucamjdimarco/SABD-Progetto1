@@ -1,4 +1,5 @@
-##/opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --total-executor-cores 1 --executor-memory 1G query3.py
+#/opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --num-executors 2 --executor-cores 1 --executor-memory 1G query3.py
+#/opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --num-executors 1 --total-executor-cores 1 --executor-memory 1G query3.py
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, expr, percent_rank
@@ -22,14 +23,24 @@ df = spark.read.parquet("hdfs://namenode:8020/nifi/filter2/raw_data_medium-utv_s
 latest_detection_date = df.groupBy("serial_number") \
     .agg(expr("max(date)").alias("latest_detection_date"))
 
+# latest_detection_date.show()
+
+
 
 # Unisci la data di rilevamento più recente con i dati originali
+#df_with_latest_date = df.join(latest_detection_date, "serial_number")
 df_with_latest_date = df.join(
     latest_detection_date, 
     (df["serial_number"] == latest_detection_date["serial_number"]) &
     (df["date"] == latest_detection_date["latest_detection_date"]),
     how="inner"
 )
+
+# df_with_latest_date.show(100)
+# num_tuples = df_with_latest_date.count()
+# print("#####################################################")
+# print(f"Number of tuples: {num_tuples}")
+# print("#####################################################")
 
 # Calcola le ore di funzionamento per ciascun disco rigido
 df_with_hours = df_with_latest_date.withColumn(

@@ -1,4 +1,4 @@
-##/opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --total-executor-cores 1 --executor-memory 1G query2.py
+#/opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --num-executors 2 --executor-cores 1 --executor-memory 1G query2.py
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, desc, collect_set, concat_ws
@@ -76,6 +76,8 @@ result = top_10_vault_failures.join(vaults_with_models, "vault_id").orderBy(desc
 
 result_csv = top_10_vault_failures.join(df_csv, "vault_id").orderBy(desc("count"))
 
+
+
 result_csv.write.mode("overwrite").csv("file:///opt/spark/work-dir/query2_2")
 
 print("---Second part: %s seconds ---" % (time.time() - start_time))
@@ -95,6 +97,17 @@ for row in result.collect():
     
     # Scrivi i dati in Redis
     redis_client.hset("query2b",redis_key, count)
+
+
+
+# result_data = result.collect()
+# for row in result_data:
+#     vault_id = row["vault_id"]
+#     models = ",".join(row["models"])
+#     count = row["count"]
+#     redis_key = f"vault_{vault_id}, models:{models}"
+#     redis_value = f"count:{count}"
+#     redis_client.set(redis_key, redis_value)
 
 print("--- %s seconds ---" % (time.time() - start_time))
 print("First part time: %s" % first_part_time)  

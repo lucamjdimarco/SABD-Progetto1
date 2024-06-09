@@ -1,5 +1,6 @@
 ##/opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --total-executor-cores 1 --executor-memory 1G query1.py
 
+
 from pyspark.sql.functions import col
 from pyspark.sql import SparkSession
 import redis

@@ -1,4 +1,4 @@
-##/opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --total-executor-cores 1 --executor-memory 1G query3.py
+##/opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --num-executors 1 --total-executor-cores 1 --executor-memory 1G query3.py
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, expr, percent_rank

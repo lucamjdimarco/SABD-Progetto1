@@ -1,4 +1,4 @@
-##/opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --total-executor-cores 1 --executor-memory 1G query2.py
+#/opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --num-executors 2 --executor-cores 1 --executor-memory 1G query2.py
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, desc, collect_set, concat_ws
@@ -48,6 +48,15 @@ for item in data_to_redis:
     value = item["count"]
     redis_client.hset("query2a", key, value)
 
+# Scrittura dei top 10 modelli su Redis
+# top_10_failures_data = top_10_failures.collect()
+# for idx, row in enumerate(top_10_failures_data):
+#     model = row["model"]
+#     count = row["count"]
+#     redis_key = f"top_10_failures:{idx+1}"
+#     redis_value = f"model:{model},count:{count}"
+#     redis_client.set(redis_key, redis_value)
+
 print("---End first part: %s seconds ---\n\n\n" % (time.time() - start_time))
 end_first_part_time = time.time() - start_time
 
@@ -60,6 +69,20 @@ sorted_vault_failures = vault_failures.orderBy(desc("count"))
 
 # Selezione dei primi 10 vault con più guasti
 top_10_vault_failures = sorted_vault_failures.limit(10)
+
+# # Scrittura dei top 10 vault su Redis
+# top_10_vault_failures_data = top_10_vault_failures.collect()
+# data_to_redis = []
+# for row in top_10_vault_failures_data:
+#     data_to_redis.append({
+#         "vault_id": row["vault_id"],
+#         "count": row["count"]
+#     })
+
+# for item in data_to_redis:
+#     key = f"{item['vault_id']}"
+#     value = item["count"]
+#     redis_client.hset("query2a", key, value)
 
 # Visualizzazione dei risultati
 top_10_vault_failures.show(truncate=False)
@@ -76,7 +99,24 @@ result = top_10_vault_failures.join(vaults_with_models, "vault_id").orderBy(desc
 
 result_csv = top_10_vault_failures.join(df_csv, "vault_id").orderBy(desc("count"))
 
+
+
 result_csv.write.mode("overwrite").csv("file:///opt/spark/work-dir/query2_2")
+
+# Scrittura dei risultati su Redis
+# query2b = result.collect()
+# data_to_redis = []
+# for row in query2b:
+#     data_to_redis.append({
+#         "vault_id": row["vault_id"],
+#         "models": row["models"],
+#         "count": row["count"]
+#     })
+
+# for item in data_to_redis:
+#     key = f"{item['vault_id']}"
+#     value = item["count"]
+#     redis_client.hset("query2a", key, value)
 
 print("---Second part: %s seconds ---" % (time.time() - start_time))
 second_part_time = time.time() - start_time
@@ -95,6 +135,17 @@ for row in result.collect():
     
     # Scrivi i dati in Redis
     redis_client.hset("query2b",redis_key, count)
+
+
+
+# result_data = result.collect()
+# for row in result_data:
+#     vault_id = row["vault_id"]
+#     models = ",".join(row["models"])
+#     count = row["count"]
+#     redis_key = f"vault_{vault_id}, models:{models}"
+#     redis_value = f"count:{count}"
+#     redis_client.set(redis_key, redis_value)
 
 print("--- %s seconds ---" % (time.time() - start_time))
 print("First part time: %s" % first_part_time)  

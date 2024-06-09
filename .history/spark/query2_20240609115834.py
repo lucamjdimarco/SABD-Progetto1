@@ -1,4 +1,4 @@
-##/opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --total-executor-cores 1 --executor-memory 1G query2.py
+#/opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --num-executors 2 --executor-cores 1 --executor-memory 1G query2.py
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, desc, collect_set, concat_ws
