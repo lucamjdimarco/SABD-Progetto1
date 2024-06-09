@@ -34,7 +34,7 @@ Per eseguire Query 1 con sei core distribuiti tra gli executor
 Per eseguire Query 2 con singolo core per executor 
 
 ```bash
-  /opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --total-executor-cores 1 --executor-memory 1G query1.py
+  /opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --total-executor-cores 1 --executor-memory 1G query2.py
 ```
 
 Per eseguire Query 2 con tre core distribuiti tra gli executor 
