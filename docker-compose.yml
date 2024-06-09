@@ -30,6 +30,10 @@ services:
         hdfs dfs -mkdir -p /stats &&
         hdfs dfs -chown -R nifi:hadoop /stats &&
         hdfs dfs -chmod -R 755 /stats &&
+        hdfs dfs -mkdir -p /data &&
+        hdfs dfs -chown -R nifi:hadoop /data &&
+        hdfs dfs -chmod -R 755 /data &&
+        hdfs dfs -put /opt/hadoop/raw_data_medium-utv_sorted.csv /data/ &&
         tail -f /dev/null
       "
     ports:
@@ -42,6 +46,7 @@ services:
       - hadoop-net
     volumes:
       - ./hdfs-site.xml:/opt/hadoop/etc/hadoop/hdfs-site.xml
+      - ./raw_data_medium-utv_sorted.csv:/opt/hadoop/raw_data_medium-utv_sorted.csv
 
   datanode1:
     image: apache/hadoop:3

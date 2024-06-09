@@ -26,10 +26,11 @@ grouped = csv.groupBy(
 
 filtered = grouped.filter(col("failure") == 1) 
 
-filteredPlus = filtered.filter(col("count").isin([2,3,4])) 
+filteredPlus = filtered.filter(col("count").isin([2,3,4]))
 
 # Converti il DataFrame in una lista di dizionari JSON
 filteredPlus.write.mode("overwrite").csv("file:///opt/spark/work-dir/query1")
+
 print("--- %s seconds ---" % (time.time() - start_time))
 print("\n\n\n")
 filtered_data = filteredPlus.collect()
@@ -58,6 +59,6 @@ print("--- %s seconds ---" % (time.time() - start_time))
 
 print("Job completed. Keeping Spark session open for monitoring.")
 while True:
-    time.sleep(60)
+     time.sleep(60)
 
 spark.stop()
