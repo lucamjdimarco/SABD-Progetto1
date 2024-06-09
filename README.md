@@ -72,7 +72,7 @@ Per eseguire Query 3 con sei core distribuiti tra gli executor
 
 ## Query 1 SQL
 
-Per eseguire Query 1 con singolo core per executor 
+Per eseguire Query 1 SQL con singolo core per executor 
 
 ```bash
   /opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --total-executor-cores 1 --executor-memory 1G query1SQL.py
@@ -90,9 +90,9 @@ Per eseguire Query 1 con sei core distribuiti tra gli executor
   /opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --total-executor-cores 6 --executor-memory 1G query1SQL.py
 ```
 
-## Query 2
+## Query 2 SQL
 
-Per eseguire Query 2 con singolo core per executor 
+Per eseguire Query 2 SQL con singolo core per executor 
 
 ```bash
   /opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --total-executor-cores 1 --executor-memory 1G query2SQL.py
@@ -110,9 +110,9 @@ Per eseguire Query 2 con sei core distribuiti tra gli executor
   /opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --total-executor-cores 6 --executor-memory 1G query2SQL.py
 ```
 
-## Query 3
+## Query 3 SQL
 
-Per eseguire Query 3 con singolo core per executor 
+Per eseguire Query 3 SQL con singolo core per executor 
 
 ```bash
   /opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --total-executor-cores 1 --executor-memory 1G query3SQL.py
