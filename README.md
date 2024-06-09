@@ -129,3 +129,10 @@ Per eseguire Query 3 con sei core distribuiti tra gli executor
 ```bash
   /opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --total-executor-cores 6 --executor-memory 1G query3SQL.py
 ```
+
+## Grafana
+- Accedere all'indirizzo ```localhost:5000```
+- Inserire ```username = admin``` e ```password = admin```
+- Sul menù di sx, aprire la pagina ```connections```, muoversi su ```new connections``` e creare una nuova connessione verso Redis
+- Successivamente, dal menù di sx, muoversi nella voce ```connections```. Successivamente selezionare la voce ```data source```: nella finestrà che si aprirà, specificare la porta sulla quale Redis sarà in ascolto: ```6379```
+- Dopo aver completato con successo la connessione verso Redis, cliccare sulla voce ```new``` --> ```import``` e inserire il JSON della dashboard presente nel repository
