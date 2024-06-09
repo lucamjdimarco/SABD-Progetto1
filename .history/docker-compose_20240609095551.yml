@@ -115,6 +115,30 @@ services:
       - ./core-site.xml:/opt/spark/conf/core-site.xml
       - ./hdfs-site.xml:/opt/spark/conf/hdfs-site.xml
 
+  # spark-worker:
+  #   #image: apache/spark:latest
+  #   image: lucamjdimarco/sabd
+  #   container_name: spark-worker
+  #   hostname: spark-worker
+  #   environment:
+  #     - SPARK_MODE=worker
+  #     - SPARK_MASTER_URL=spark://spark-master:7077
+  #     - SPARK_WORKER_MEMORY=1G
+  #     - SPARK_WORKER_CORES=1
+  #     - SPARK_WORKER_PORT=8082
+  #   ports:
+  #     - "8082:8082"
+  #   networks:
+  #     - hadoop-net
+  #   command: >
+  #     /bin/bash -c "
+  #       /opt/spark/sbin/start-worker.sh spark://spark-master:7077 &&
+  #       tail -f /dev/null
+  #     "
+  #   volumes:
+  #     - ./core-site.xml:/opt/spark/conf/core-site.xml
+  #     - ./hdfs-site.xml:/opt/spark/conf/hdfs-site.xml
+
   spark-worker-1:
     image: lucamjdimarco/sabd
     container_name: spark-worker-1
