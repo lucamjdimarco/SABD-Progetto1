@@ -5,6 +5,7 @@ Di seguito vengono descritti i passi per il setup dell'ambiente.
 - Eseguire ```docker-compose up -d ``` nella cartella dove presente il file docker-compose.yml
 - Navigare, mediante browser, nella interfaccia di NiFi all'indirizzo ```localhost:8080/nifi```
 - Caricare il template presente all'interno del repository ed avviare tutti i processori presenti. Successivamente attendere il termine del pre-processamento ed ingestion verso HDFS
+- Muoversi nella cartella utils ed eseguire lo script ```./load.sh```
 - Per effettuare le query all'interno di Spark, muoversi all'interno del container Docker spark-master mediante il comando da terminale: ```docker exec -it spark-master /bin/bash```
 - I comandi per effettuare le query vengono illustrati di seguito.
 
